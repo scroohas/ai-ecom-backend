@@ -1,30 +1,25 @@
-# syntax=docker/dockerfile:1
+FROM node:18.14.0-alpine AS builder
 
-ARG NODE_VERSION=18.16.0
-
-# Base image
-FROM node:${NODE_VERSION}-alpine as base
 WORKDIR /usr/src/app
+
+ENV NODE_ENV=development
+
+# Copy package.json and package-lock.json before other files
+# Utilize cache on step npm install
 COPY package*.json ./
 
-# Install production dependencies
-FROM base as deps
-COPY package*.json yarn.lock ./
-RUN yarn install --production --frozen-lockfile
+RUN yarn
 
-# Build application
-FROM deps as build
+# Copy application files
 COPY . .
-RUN yarn install --frozen-lockfile && yarn run build
 
-# Final production image
-FROM base as final
-ENV NODE_ENV production
-USER node
+# Build the application
+RUN yarn run build
 
-# Copy dependencies and compiled JS from previous stages
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/build .
+WORKDIR /usr/src/app/build
 
-EXPOSE 8000
-CMD node src/index.js
+# Expose the listening port
+EXPOSE 8081
+
+# Run the application
+CMD ["node", "src/index.js"]

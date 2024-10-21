@@ -1,8 +1,8 @@
-version: '3.4'
+version: "3.4"
 
 services:
-  tsexpresstypeorm:
-    image: tsexpresstypeorm
+  ai-ecom-backend:
+    image: ai-ecom-backend
     build:
       context: .
       dockerfile: ./Dockerfile
