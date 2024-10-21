@@ -35,8 +35,6 @@ class ProductService {
   generateProductAIAnalytics = async (id: string) => {
     const product = await this.getProductById(id);
 
-    console.log(aiPrompt);
-
     const parts = [
       ...aiPrompt,
       {
@@ -49,8 +47,6 @@ class ProductService {
       contents: [{ role: "user", parts }],
       generationConfig,
     });
-
-    console.log(result.response.text());
 
     // Stores in table
     const aiAnalysis = JSON.parse(
